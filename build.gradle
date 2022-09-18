@@ -1,0 +1,63 @@
+plugins {
+    id 'java-library'
+    id 'xyz.jpenilla.run-paper' version '1.0.6'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.5.2'
+}
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+
+group 'fr.xamez'
+version '0.1'
+setLibsDirName("D:/Developpement/PROJECT JAVA/SimpleApplication/run/plugins/")
+
+String author = 'Xamez'
+Charset charset = StandardCharsets.UTF_8
+
+int javaVersion = 17
+
+def ver = [
+        major   : "1",
+        minor   : "19",
+        patch   : "0",
+        revision: "0.1",
+        tag     : "SNAPSHOT"
+]
+
+String serverImpl = "${ver.major}.${ver.minor}"
+if (ver.patch != null && ver.patch != '0') serverImpl += '.' + ver.patch
+if (ver.revision != null) serverImpl += '-R' + ver.revision
+if (ver.tag != null) serverImpl += '-' + ver.tag
+
+repositories {
+    mavenLocal();
+    maven { url = "https://repo.purpurmc.org/snapshots" }
+    maven { url = "https://repo.dmulloy2.net/repository/public/" }
+}
+
+dependencies {
+    compileOnly group: "org.spigotmc", name: "spigot", version: "${serverImpl}"
+    compileOnly group: "org.purpurmc.purpur", name: "purpur-api", version: "${serverImpl}"
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "5.0.0-SNAPSHOT"
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
+}
+
+
+tasks {
+    runServer {
+        if (ver.patch != null && ver.patch != '0') {
+            minecraftVersion("${ver.major}.${ver.minor}.${ver.patch}")
+        } else {
+            minecraftVersion("${ver.major}.${ver.minor}")
+        }
+    }
+}
+
+bukkit {
+    main = "${group}.${project.name.toLowerCase()}.SimpleApplication"
+    apiVersion = "${ver.major}.${ver.minor}"
+    authors = [author]
+    depend = ['ProtocolLib']
+}
